@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
-import com.tuber.domain.City;
 import com.tuber.domain.Customer;
 import com.tuber.domain.CustomerPreference;
 

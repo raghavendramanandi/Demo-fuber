@@ -29,16 +29,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tuber.Exceptions.CustomerDoesNotExistException;
 import com.tuber.Exceptions.NoCabsAvailable;
-import com.tuber.domain.City;
+
 import com.tuber.domain.Customer;
-import com.tuber.domain.Hotel;
+
 import com.tuber.domain.Location;
 import com.tuber.domain.Preference;
 import com.tuber.domain.RequestLocation;
 import com.tuber.service.BookingService;
-import com.tuber.service.CityService;
+
 import com.tuber.service.CustomerService;
-import com.tuber.service.HotelService;
+
 import com.tuber.service.LocationService;
 
 @Controller
@@ -51,14 +51,8 @@ public class SampleController {
 	private CustomerService customerService;
 	
 	@Autowired
-	private HotelService hotelService;
-	
-	@Autowired
 	BookingService bookingService;
 	
-	@Autowired
-	CityService cityService;
-
 	@GetMapping("/health-check")
 	@ResponseBody
 	@Transactional(readOnly = true)
@@ -80,7 +74,6 @@ public class SampleController {
 		
 		customerService.test();
 		
-		System.out.println(cityService.getCity("San Francisco", "USA"));
 		return "I'm alive";
 	}
 	
