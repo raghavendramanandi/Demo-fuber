@@ -7,11 +7,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tuber.Exceptions.CustomerDoesNotExistException;
-import com.tuber.Exceptions.NoCabsAvailable;
+import com.tuber.Exceptions.InvalidLocationException;
+import com.tuber.Exceptions.NoCabsAvailableException;
+import com.tuber.domain.BookingData;
+import com.tuber.domain.COLOR;
 import com.tuber.domain.Cab;
 import com.tuber.domain.Customer;
 import com.tuber.domain.Location;
 import com.tuber.domain.Preference;
+import com.tuber.validation.CustomerValidator;
+import com.tuber.validation.LocationValidator;
 
 @Component("bookingService")
 @Transactional
@@ -20,51 +25,78 @@ public class BookingServiceImpl implements BookingService{
 	private final CustomerRepository customerRepository;
 	private final PreferenceRepository preferenceRepository;
 	private final CabRepository cabRepository;
+	private final BookingDataRepository bookingDataRepository;
+	private final LocationRepository locationRepository;
 
+	
 	public BookingServiceImpl(CustomerRepository customerRepository,
 			PreferenceRepository preferenceRepository,
-				CabRepository cabRepository
+				CabRepository cabRepository,
+					BookingDataRepository bookingDataRepository,
+						LocationRepository locationRepository
 			) {
 		super();
 		this.customerRepository = customerRepository;
 		this.preferenceRepository = preferenceRepository;
 		this.cabRepository = cabRepository;
+		this.bookingDataRepository = bookingDataRepository;
+		this.locationRepository = locationRepository;
 	}
 	
 	@Override
-	public Long BookCab(Long customerId, Location currentLocation) throws CustomerDoesNotExistException, NoCabsAvailable {
+	public Long BookCab(Long customerId, Location currentLocation) throws CustomerDoesNotExistException, NoCabsAvailableException, InvalidLocationException {
 		Customer customer = customerRepository.findById(customerId);
-		if(customer == null){
-			throw new CustomerDoesNotExistException();
+		CustomerValidator.Validate(customer);
+		LocationValidator.validate(currentLocation);
+		locationRepository.save(currentLocation);
+		
+		
+		List<Cab> matchedCabs = getCabsForPreference(getCustomerPreferences(customer));
+		/*System.out.println("===========================================");
+		for (Cab cab : matchedCabs) {
+			System.out.println(cab);
+		}*/
+		
+		System.out.println();
+		BookingData bookingData = bookingDataRepository.save(new BookingData(customer, findNearesCabForCustomer(currentLocation, matchedCabs)));
+		return bookingData.getId();
+	}
+
+	
+
+	// This method will get all available cabs based on preference
+	private List<Cab> getCabsForPreference(List<Preference> customerPreferences) {
+		List<Cab> availableCab =
+		cabRepository.findByIdNotIn(
+				bookingDataRepository.findAll().stream()
+				 .map(BookingData::getCab)
+				  .map(Cab::getId)
+				  .collect(Collectors.toList()));
+		if(customerPreferences.size() > 0){
+			availableCab = availableCab.stream().filter(a -> customerPreferences.contains(a.getColor().name())).collect(Collectors.toList());
 		}
+		return availableCab;
+	}
+
+	private List<Preference> getCustomerPreferences(Customer customer) {
 		List<Preference> customerPreferences = preferenceRepository.findByCustomer(customer);
-		List<Cab> matchedCabs = cabRepository.findByColorIn(
-				customerPreferences.stream()
-					.map(Preference::getPreferenceValue)
-						.collect(Collectors.toList()));
-		findAllAvailableCabs(matchedCabs);
-		findNearesCabForCustomer(currentLocation, matchedCabs);
-		
-		return 1L;
+		return customerPreferences;
 	}
 
-	private List<Cab> findAllAvailableCabs(List<Cab> matchedCabs) {
-		
-		return null;
-	}
-
-	private Cab findNearesCabForCustomer(Location currentLocation, List<Cab> matchedCabs) throws NoCabsAvailable {
-		double distance = 999999999;
+	private Cab findNearesCabForCustomer(Location currentLocation, List<Cab> matchedCabs) throws NoCabsAvailableException {
+		double distance;
+		double minDistance = 999999999;
 		Cab selectedCab = null;
 		for (Cab cab : matchedCabs) {
-			if(currentLocation.distance(cab.getCabLastKnownLocation()) < distance){
-				distance = currentLocation.distance(cab.getCabLastKnownLocation());
+			distance = cab.getCabLastKnownLocation().distance(currentLocation);
+			if(distance < minDistance){
+				minDistance = distance;
 				selectedCab = cab;
 			}
 		}
 		
 		if(selectedCab  ==  null){
-			throw new NoCabsAvailable();
+			throw new NoCabsAvailableException();
 		}
 		return selectedCab;
 	}

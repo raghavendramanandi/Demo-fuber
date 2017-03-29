@@ -45,5 +45,11 @@ public class BookingData implements Serializable{
 	public String toString() {
 		return "BookingData [customer=" + customer + ", cab=" + cab + "]";
 	}
+
+	public Long getId() {
+		return id;
+	}
+	
+	
 	
 }

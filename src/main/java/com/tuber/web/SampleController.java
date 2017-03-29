@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tuber.Exceptions.CustomerDoesNotExistException;
-import com.tuber.Exceptions.NoCabsAvailable;
+import com.tuber.Exceptions.NoCabsAvailableException;
 
 import com.tuber.domain.Customer;
 
@@ -57,23 +57,7 @@ public class SampleController {
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public String helloWorld() {
-		System.out.println("Hello");
-		/*if(cityService != null)
-			return this.cityService.getCity("Bath", "UK").getName();
-		locationService.save(new Location(1.0, 2.0));
-		for (Location location : locationService.getLocation()) {
-			System.out.println(location);
-		}*/
-		return "I'm alive";
-	}
-	
-	@GetMapping("/setupdata")
-	@ResponseBody
-	@Transactional(readOnly = true)
-	public String setupData() {
-		
-		customerService.test();
-		
+		System.out.println("I'm alive");
 		return "I'm alive";
 	}
 	
@@ -82,6 +66,8 @@ public class SampleController {
 	@Transactional(readOnly = true)
 	public String RequestCab(@PathVariable Long customerId, @RequestBody Location currentLocation) {
 		try {
+			System.out.println(customerId);
+			System.out.println(currentLocation);
 			bookingService.BookCab(customerId, currentLocation);
 		} catch (Exception e) {
 			e.printStackTrace();

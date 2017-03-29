@@ -51,6 +51,10 @@ public class Location implements Serializable{
 	
 	public Double distance(Location location) {
 		//Distance =(x2−x1)2+(y2−y1)2‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾√
+		System.out.println(this.latitude);
+		System.out.println(this.longitude);
+		System.out.println(location.latitude);
+		System.out.println(location.longitude);
 		return Math.sqrt(
 				Math.pow((this.latitude - location.latitude), 2) +
 				Math.pow((this.longitude - location.longitude), 2));		 

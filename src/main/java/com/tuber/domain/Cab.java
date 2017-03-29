@@ -21,7 +21,7 @@ public class Cab implements Serializable{
 	@GeneratedValue
 	private Long id;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	@Enumerated(EnumType.ORDINAL)
 	private COLOR color;
 	
@@ -59,7 +59,16 @@ public class Cab implements Serializable{
 		return "Cab [color=" + color + ", RegisterationNumber=" + RegisterationNumber + ", cabLastKnownLocation="
 				+ location + "]";
 	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public Long getId() {
+		return id;
+	}
 	
-	
-	
+	public void setLocation(Location location) {
+		this.location = location;
+	}
 }

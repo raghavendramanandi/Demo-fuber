@@ -16,4 +16,6 @@ public interface BookingDataRepository extends Repository<BookingData, Long>{
 	List<BookingData> findByCab(Cab cab);
 	
 	List<BookingData> findAll();
+	
+	void delete(BookingData bookingData);
 }
