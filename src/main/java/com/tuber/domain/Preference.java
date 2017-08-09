@@ -1,20 +1,12 @@
 package com.tuber.domain;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.springframework.util.Assert;
 
 @Entity
 public class Preference implements Serializable {
@@ -59,9 +51,5 @@ public class Preference implements Serializable {
 	@Override
 	public String toString() {
 		return "Preference [id=" + id + ", customer=" + customer + ", preferenceValue=" + preferenceValue + "]";
-	}
-	
-	List<Cab> getMatchedCabs(List<Cab> allCabs){
-		return null;
 	}
 }

@@ -1,7 +1,6 @@
 package com.tuber.domain;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -58,10 +57,6 @@ public class Cab implements Serializable{
 	public String toString() {
 		return "Cab [color=" + color + ", RegisterationNumber=" + RegisterationNumber + ", cabLastKnownLocation="
 				+ location + "]";
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 
 	public Long getId() {

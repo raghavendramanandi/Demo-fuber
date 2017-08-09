@@ -1,9 +1,10 @@
-package com.tuber.service;
+package com.tuber.dao;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
-
 import com.tuber.domain.BookingData;
 import com.tuber.domain.Cab;
 import com.tuber.domain.Customer;
@@ -17,5 +18,7 @@ public interface BookingDataRepository extends Repository<BookingData, Long>{
 	
 	List<BookingData> findAll();
 	
-	void delete(BookingData bookingData);
+	@Query("delete from BookingData bd where bd.id = ?")
+	@Modifying
+	void delete(Long id);
 }

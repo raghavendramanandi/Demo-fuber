@@ -1,8 +1,6 @@
 package com.tuber.domain;
 
 import java.io.Serializable;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -49,7 +47,12 @@ public class BookingData implements Serializable{
 	public Long getId() {
 		return id;
 	}
-	
-	
-	
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
+	public void setCab(Cab cab) {
+		this.cab = cab;
+	}
 }

@@ -1,8 +1,6 @@
-package com.tuber.service;
+package com.tuber.dao;
 
 import java.util.List;
-
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
 import com.tuber.domain.Cab;
@@ -16,6 +14,5 @@ public interface CabRepository extends Repository<Cab, Long>{
 	
 	List<Cab> findAll();
 	
-	//@Query("select c.id from Cab c where c.id not in (select bd.cab from BookingData bd)")
 	List<Cab> findByIdNotIn(List<Long> bookedCars);
 }

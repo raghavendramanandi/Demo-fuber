@@ -10,6 +10,6 @@ public interface CustomerService {
 	Customer save(Customer customer);
 	Boolean save( Preference preference);
 	List<Preference> getAllPreferences();
-	public void test();
 	//Preference addPreference(Customer customer, Preference preference);
+	void printData();
 }

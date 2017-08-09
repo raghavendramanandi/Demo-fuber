@@ -1,4 +1,4 @@
-package com.tuber.service;
+package com.tuber.service.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,15 +6,22 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tuber.Exceptions.CustomerAlredyAssignedACabException;
 import com.tuber.Exceptions.CustomerDoesNotExistException;
 import com.tuber.Exceptions.InvalidLocationException;
 import com.tuber.Exceptions.NoCabsAvailableException;
+import com.tuber.dao.BookingDataRepository;
+import com.tuber.dao.CabRepository;
+import com.tuber.dao.CustomerRepository;
+import com.tuber.dao.LocationRepository;
+import com.tuber.dao.PreferenceRepository;
 import com.tuber.domain.BookingData;
-import com.tuber.domain.COLOR;
 import com.tuber.domain.Cab;
 import com.tuber.domain.Customer;
 import com.tuber.domain.Location;
 import com.tuber.domain.Preference;
+import com.tuber.service.BookingService;
+import com.tuber.validation.BookingValidation;
 import com.tuber.validation.CustomerValidator;
 import com.tuber.validation.LocationValidator;
 
@@ -44,18 +51,14 @@ public class BookingServiceImpl implements BookingService{
 	}
 	
 	@Override
-	public Long BookCab(Long customerId, Location currentLocation) throws CustomerDoesNotExistException, NoCabsAvailableException, InvalidLocationException {
+	public Long BookCab(Long customerId, Location currentLocation) throws CustomerDoesNotExistException, NoCabsAvailableException, InvalidLocationException, CustomerAlredyAssignedACabException {
 		Customer customer = customerRepository.findById(customerId);
 		CustomerValidator.Validate(customer);
 		LocationValidator.validate(currentLocation);
+		BookingValidation.validate(bookingDataRepository.findByCustomer(customer));
 		locationRepository.save(currentLocation);
 		
-		
 		List<Cab> matchedCabs = getCabsForPreference(getCustomerPreferences(customer));
-		/*System.out.println("===========================================");
-		for (Cab cab : matchedCabs) {
-			System.out.println(cab);
-		}*/
 		
 		System.out.println();
 		BookingData bookingData = bookingDataRepository.save(new BookingData(customer, findNearesCabForCustomer(currentLocation, matchedCabs)));
@@ -66,12 +69,13 @@ public class BookingServiceImpl implements BookingService{
 
 	// This method will get all available cabs based on preference
 	private List<Cab> getCabsForPreference(List<Preference> customerPreferences) {
-		List<Cab> availableCab =
-		cabRepository.findByIdNotIn(
-				bookingDataRepository.findAll().stream()
-				 .map(BookingData::getCab)
-				  .map(Cab::getId)
-				  .collect(Collectors.toList()));
+		List<Long> collect = bookingDataRepository.findAll().stream()
+		 .map(BookingData::getCab)
+		  .map(Cab::getId)
+		  .collect(Collectors.toList());
+		collect.add(-1l);
+		List<Cab> availableCab =cabRepository.findByIdNotIn(collect);
+		
 		if(customerPreferences.size() > 0){
 			availableCab = availableCab.stream().filter(a -> customerPreferences.contains(a.getColor().name())).collect(Collectors.toList());
 		}
@@ -83,7 +87,7 @@ public class BookingServiceImpl implements BookingService{
 		return customerPreferences;
 	}
 
-	private Cab findNearesCabForCustomer(Location currentLocation, List<Cab> matchedCabs) throws NoCabsAvailableException {
+	public Cab findNearesCabForCustomer(Location currentLocation, List<Cab> matchedCabs) throws NoCabsAvailableException {
 		double distance;
 		double minDistance = 999999999;
 		Cab selectedCab = null;

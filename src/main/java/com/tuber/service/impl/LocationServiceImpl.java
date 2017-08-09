@@ -1,11 +1,13 @@
-package com.tuber.service;
+package com.tuber.service.impl;
 
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tuber.dao.LocationRepository;
 import com.tuber.domain.Location;
+import com.tuber.service.LocationService;
 
 
 @Component("locationService")

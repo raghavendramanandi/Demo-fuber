@@ -1,4 +1,4 @@
-package com.tuber.service;
+package com.tuber.service.impl;
 
 import java.util.List;
 
@@ -6,9 +6,10 @@ import org.springframework.stereotype.Component;
 
 import com.tuber.domain.Location;
 import com.tuber.domain.Preference;
+import com.tuber.service.CalculationService;
 
-@Component("rideService")
-public class calculationServiceImpl implements CalculationService{
+@Component("calculationService")
+public class CalculationServiceImpl implements CalculationService{
 	
 	private final Double DogecoinPerMinute=1d;
 	private final Double DogecoinPerKilometer = 2d;
@@ -18,9 +19,9 @@ public class calculationServiceImpl implements CalculationService{
 	@Override
 	public Double FairCalculator(int timeSpentInMinutes, Location endLocation, Location cabLastKnownLocation,
 			List<Preference> customerPreferences) {
+		
 		return ((DogecoinPerMinute *timeSpentInMinutes)
-				+ (DogecoinPerKilometer * endLocation.distance(cabLastKnownLocation)
+				+ (DogecoinPerKilometer * endLocation.distance(cabLastKnownLocation.getLatitude(), cabLastKnownLocation.getLongitude())
 			      + (customerPreferences.size() > 0 ? DogecoinForPinkCar : 0)));
 	}
-
 }
